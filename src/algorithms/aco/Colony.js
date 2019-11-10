@@ -63,6 +63,10 @@ class Colony {
         that.daemonActions(x);
         if (x < that.maxIterations && that.continue) {
           doWork(x);
+        } else {
+          if (that.onNewBest) {
+            that.onNewBest(x);
+          }
         }
       }, TIMEOUT);
     }
