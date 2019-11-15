@@ -7,6 +7,8 @@ class Population {
     this.size = props.size || 10;
     this.elitism = 0.2;
     this.chromosomes = [];
+    this.onNewGeneration = null;
+    this.onSolutionFound = null;
 
     this.fill();
   }
@@ -46,6 +48,18 @@ class Population {
     }
   }
 
+  getBestScore() {
+    return this.chromosomes[0].score;
+  }
+
+  setOnNewGeneration(value) {
+    this.onNewGeneration = value;
+  }
+
+  setOnSolutionFound(value) {
+    this.onSolutionFound = value;
+  }
+
   generation() {
     this.generationNumber += 1;
     this.sort();
@@ -53,7 +67,31 @@ class Population {
     this.mate();
     this.fill();
     this.sort();
-    console.log(`Next generation ${this.generationNumber} with score ${this.chromosomes[0].score}`, this.chromosomes);
+
+    this.onNewGeneration && this.onNewGeneration(this);
+  }
+
+  recursiveGeneration(bestGeneration, bestScore, timeout = 100) {
+    setTimeout(() => {
+      this.generation();
+
+      if (this.generationNumber - bestGeneration >= 100) {
+        this.onSolutionFound && this.onSolutionFound(this);
+        return true;
+      }
+
+      const currentBestScore = this.getBestScore();
+
+      if (bestScore < currentBestScore) {
+        this.recursiveGeneration(this.generationNumber, currentBestScore, timeout);
+      } else {
+        this.recursiveGeneration(bestGeneration, bestScore, timeout)
+      }
+    }, timeout);
+  }
+
+  findSolution(timeout = 100) {
+    this.recursiveGeneration(0, 0, timeout);
   }
 }
 
