@@ -6,13 +6,13 @@ export default (id) => {
   div.innerHTML = `
     <div>
       <a id="start-button" class="button">Start</a>
-      <input id="pop-size-input" placeholder="Population size"/>
-      <input id="iterations-input" placeholder="Iterations"/>
-      <input id="alpha-input" placeholder="Alpha"/>
-      <input id="beta-input" placeholder="Beta"/>
-      <input id="pho-input" placeholder="Pheromone vaporisation"/>
-      <input id="ip-input" placeholder="Initial pheromone"/>
-      <input id="q-input" placeholder="Q"/>
+      <input id="pop-size-input" placeholder="Population size (20)"/>
+      <input id="iterations-input" placeholder="Iterations (200)"/>
+      <input id="alpha-input" placeholder="Alpha (1)"/>
+      <input id="beta-input" placeholder="Beta (2)"/>
+      <input id="pho-input" placeholder="Vaporisation (0.1)"/>
+      <input id="ip-input" placeholder="Initial pheromone (1)"/>
+      <input id="q-input" placeholder="Q (1)"/>
     </div>
     
     <div id="counter">Running 0</div>
