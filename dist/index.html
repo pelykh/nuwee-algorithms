@@ -3,12 +3,44 @@
 <head>
     <title>Nuwee algorithms</title>
     <style>
+        #stocks .title {
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            font-size: 30px;
+            color: #e7e7e7;
+            font-weight: 900;
+        }
+
+        #stocks .controls {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            color: #e7e7e7;
+        }
+
+        #stocks .cash {
+            text-align: center;
+        }
+
+        #stocks .button {
+            text-align: right;
+        }
+
+        #stocks .button:hover {
+            cursor: pointer;
+        }
+
+        #aco-demo {
+            margin: 10px;
+        }
+
         #genetic-demo {
             display: inline-block;
             position: absolute;
             left: 50%;
             top: 50%;
-            transform: translate(-50%,-50%);
+            transform: translate(-50%, -50%);
             text-align: center;
             font-size: 40px;
             color: #141414;
@@ -35,6 +67,7 @@
         body {
             font-family: "Open Sans", sans-serif;
             font-weight: 300;
+            margin: 0;
         }
 
         #counter {

@@ -4,7 +4,7 @@ import Graph from './graph';
 export default (id) => {
   const div = document.getElementById(id);
   div.innerHTML = `
-    <div>
+    <div id="aco-demo">
       <a id="start-button" class="button">Start</a>
       <input id="pop-size-input" placeholder="Population size (20)"/>
       <input id="iterations-input" placeholder="Iterations (200)"/>
