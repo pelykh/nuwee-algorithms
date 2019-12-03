@@ -20,6 +20,12 @@ class Actor {
     this.mesh.position.x = x;
     this.mesh.position.z = y;
   }
+
+  overlapsWith(actors, radius) {
+    return actors.filter((actor) => (
+      this.mesh.position.distanceTo(actor.mesh.position) < radius
+    ));
+  }
 }
 
 export default Actor;
