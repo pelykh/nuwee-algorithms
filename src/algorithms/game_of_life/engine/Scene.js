@@ -2,7 +2,9 @@ import * as THREE from 'three';
 import { MapControls} from '../../../lib/OrbitControls';
 
 class Scene {
-  constructor(id) {
+  constructor(id, width, height) {
+    this.width = width || 200;
+    this.height = height || 200;
     this.root = document.getElementById(id);
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -21,10 +23,9 @@ class Scene {
     this.controls.maxDistance = 500;
     this.controls.maxPolarAngle = Math.PI / 2;
 
-
     this.initializeLight();
 
-    this.initializeEnvironment(200, 200);
+    this.initializeEnvironment(width, height);
   }
 
   initializeEnvironment(width, height) {

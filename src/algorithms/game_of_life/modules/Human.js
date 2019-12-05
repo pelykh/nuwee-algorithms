@@ -1,26 +1,19 @@
-import { Vector3} from 'three';
+import {Vector3} from 'three';
 import Actor from '../engine/Actor';
+import Zombie from "./Zombie";
 
 class Human extends Actor {
   constructor(props) {
     super({...props, color: '#4ec534'});
-
-    this.updateTimer = 100000;
-    this.updateTimerCooldown = 0.05;
-
-    this.speed = 1;
-    this.bornAt = Date.now();
     this.weapon = null;
     this.killStreak = 0;
-
-    this.prev = 0;
 
     this.layers = [
       {
         use: () => this.runFromZombies(),
         bias: 0,
         weight: {
-          zombiesAround: 0.5,
+          zombiesAround: 0.8,
           weaponsAround: -0.1,
           weaponInPickupRadius: -0.5,
           haveWeapon: -1,
@@ -40,91 +33,105 @@ class Human extends Actor {
         use: () => this.goToWeapon(),
         bias: 0,
         weight: {
-          zombiesAround: -0.8,
+          zombiesAround: -0.5,
           weaponsAround: 1,
           weaponInPickupRadius: -1,
-          haveWeapon: -1,
+          haveWeapon: -10,
         }
-      }
+      },
+      {
+        use: () => this.pickupWeapon(),
+        bias: 0.5,
+        weight: {
+          zombiesAround: 0,
+          weaponsAround: 0,
+          weaponInPickupRadius: 0.5,
+          haveWeapon: -10,
+        }
+      },
+      {
+        use: () => this.shoot(),
+        bias: -1.3,
+        weight: {
+          zombiesAround: 1,
+          weaponsAround: 0,
+          weaponInPickupRadius: 0,
+          haveWeapon: 1,
+        }
+      },
     ];
   }
 
   runFromZombies() {
-    const zombiesAround = this.overlapsWith(this.config.gameState.zombies, 50);
-    zombiesAround.sort((a,b) => a.distance > b.distance);
+    const zombiesAround = this.getZombiesAround();
     this.moveTo(zombiesAround[0].actor, true);
   }
 
   scout() {
-    this.mesh.position.x += Math.random();
+    this.moveToPoint(100, 100);
   }
 
   pickupWeapon() {
-    console.log('should pickup weapon')
-  }
+    const weaponsAround = this.getWeaponsAround(5);
+    const closestWeapon = weaponsAround[0]?.actor;
 
-  moveTo(actor, runAway=false) {
-    console.log(actor)
-    const vector = new Vector3();
-    vector.subVectors(actor.mesh.position, this.mesh.position);
-    vector.normalize();
-
-    if(runAway) {
-      vector.negate();
+    if (closestWeapon) {
+      closestWeapon.pickup();
+      this.weapon = closestWeapon;
     }
-
-    this.mesh.position.x += this.speed * vector.x;
-    this.mesh.position.z += this.speed * vector.z;
   }
 
   goToWeapon() {
-    const weaponsAround = this.overlapsWith(this.config.gameState.weapons, 50);
-    weaponsAround.sort((a,b) => a.distance > b.distance);
-    this.moveTo(weaponsAround[0].actor);
+    const weaponsAround = this.getWeaponsAround();
+    this.moveTo(weaponsAround[0]?.actor);
   }
 
   shoot() {
-    console.log('should shoot')
+    const zombiesAround = this.getZombiesAround();
+    const closestZombie = zombiesAround[0]?.actor;
+
+    if (this.weapon && closestZombie) {
+      closestZombie.kill();
+      this.killStreak += 1;
+      this.weapon = null;
+    }
   }
 
-  calculateScore(layer, input) {
-    const { weight, bias } = layer;
-    let score = 0;
+  turnIntoAZombie() {
+    const {config} = this;
+    const {core, gameState} = config;
+    const {position} = this.mesh;
 
-    for(const key in layer.weight) {
-      score += weight[key] * input[key];
+    this.destroy(gameState.humans);
+
+    const zombie = new Zombie({config});
+    zombie.delay(3);
+
+    core.spawn(
+      zombie,
+      position.x, position.z,
+      gameState.zombies
+    );
+
+    const livedFor = Date.now() - this.bornAt;
+
+    if (livedFor > core.humanRecord) {
+      core.humanRecord = livedFor;
+      console.log('New human record!', this, livedFor);
     }
-
-    return score + bias || 0;
   }
 
+  getInput() {
+    const zombiesAround = this.getZombiesAround();
+    const weaponsAround = this.getWeaponsAround();
+    const weaponsInPickupRadius = this.getWeaponsAround(5);
 
-
-  update(delta) {
-    this.updateTimer += delta;
-
-    if(this.updateTimer < this.updateTimerCooldown) {
-      return false
-    }
-
-    this.updateTimer = 0;
-
-    const zombiesAround = this.overlapsWith(this.config.gameState.zombies, 50);
-    const weaponsAround = this.overlapsWith(this.config.gameState.weapons, 50);
-    const weaponsInPickupRadius = this.overlapsWith(this.config.gameState.weapons, 5);
-
-    const input = {
+    return {
       zombiesAround: zombiesAround.length > 0,
       weaponsAround: weaponsAround.length > 0,
       weaponInPickupRadius: weaponsInPickupRadius.length > 0,
       haveWeapon: !!this.weapon,
     };
-
-    const outputs = this.layers.map((layer) => this.calculateScore(layer, input));
-
-    console.log(outputs)
-    const i = outputs.indexOf(Math.max(...outputs));
-    this.layers[i].use();
   }
 }
 
