@@ -5,7 +5,7 @@ import Zombie from "./Zombie";
 class Human extends Actor {
   constructor(props) {
     super({...props, color: '#4ec534'});
-    this.weapon = null;
+    this.weapon = 0;
     this.killStreak = 0;
 
     this.layers = [
@@ -46,7 +46,7 @@ class Human extends Actor {
           zombiesAround: 0,
           weaponsAround: 0,
           weaponInPickupRadius: 0.5,
-          haveWeapon: -10,
+          haveWeapon: -100,
         }
       },
       {
@@ -77,7 +77,7 @@ class Human extends Actor {
 
     if (closestWeapon) {
       closestWeapon.pickup();
-      this.weapon = closestWeapon;
+      this.weapon = closestWeapon.magazineSize;
     }
   }
 
@@ -90,10 +90,12 @@ class Human extends Actor {
     const zombiesAround = this.getZombiesAround();
     const closestZombie = zombiesAround[0]?.actor;
 
-    if (this.weapon && closestZombie) {
+    if (this.weapon > 0 && closestZombie) {
       closestZombie.kill();
       this.killStreak += 1;
-      this.weapon = null;
+      this.weapon -= 1;
+    } else {
+      this.scout();
     }
   }
 

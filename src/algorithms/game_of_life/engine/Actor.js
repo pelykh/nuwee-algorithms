@@ -8,7 +8,7 @@ class Actor {
     this.speed = 1;
     this.layers = [];
     this.updateTimer = 0;
-    this.updateTimerCooldown = 0.1;
+    this.updateTimerCooldown = 0.05;
     this.bornAt = Date.now();
   }
 
@@ -96,8 +96,6 @@ class Actor {
   getInput() {
     return {};
   }
-
-
 
   delay(secs) {
     this.updateTimer = this.updateTimerCooldown - secs;

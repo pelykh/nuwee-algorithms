@@ -33,7 +33,7 @@ class Core {
       this.spawn(new Zombie({config}), x, y, this.gameState.zombies);
     }
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 20; i++) {
       const x = Math.random() * this.mapWidth;
       const y = Math.random() * this.mapHeight;
       this.spawn(new Weapon({config}), x, y, this.gameState.weapons);

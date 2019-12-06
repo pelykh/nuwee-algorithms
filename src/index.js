@@ -9,5 +9,5 @@ import gameOfLifeDemo from './algorithms/game_of_life/demo';
 // art1Demo('app');
 // geneticDemo('app');
 // markovDemo('app');
-// gameOfLifeDemo('app');
-backPropagationDemo('app');
+// backPropagationDemo('app');
+gameOfLifeDemo('app');
