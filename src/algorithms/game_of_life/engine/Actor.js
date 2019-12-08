@@ -8,7 +8,7 @@ class Actor {
     this.speed = 1;
     this.layers = [];
     this.updateTimer = 0;
-    this.updateTimerCooldown = 0.05;
+    this.updateTimerCooldown = 0.01;
     this.bornAt = Date.now();
   }
 
